@@ -20,8 +20,8 @@ def get_artists_deets(artists_lists): #without top tracks
         'id': [], 
         'artist_name': [], 
         'followers': [], 
-        'genres': [], 
-        'uri': [], 
+        'popularity': [], 
+        'url': [], 
         'last_updated': []
     }
 
@@ -29,16 +29,14 @@ def get_artists_deets(artists_lists): #without top tracks
             
             artist_id = item['id']
 
-            print('searching for artists')
             current = datetime.now()
             search_result = sp.artist(artist_id=artist_id)
 
-            #TODO: Clean inputs: id is not a number, get followers['total'], genres is empty, doublecheck uri
-            artists_df['id'].append(id)
+            artists_df['id'].append(artist_id)
             artists_df['artist_name'].append(item['name'])
-            artists_df['followers'].append(search_result['followers'])
-            artists_df['genres'].append(search_result['genres'])
-            artists_df['uri'].append(search_result['uri'])
+            artists_df['followers'].append(search_result['followers']['total'])
+            artists_df['popularity'].append(search_result['popularity'])
+            artists_df['url'].append(search_result['external_urls']['spotify'])
             artists_df['last_updated'].append(current)
     
     return artists_df
@@ -65,12 +63,9 @@ def initialize_artists(): #main function that will call other sub functions
 
     #calling get_artists_deets
     artist_df = pd.DataFrame(data=get_artists_deets(artists))
-    print(artist_df[0:2])
 
-    #SAMPLE OUTPUT
-                        #    id   artist_name                           followers genres                                    uri               last_updated
-    # 0  <built-in function id>  Taylor Swift  {'href': None, 'total': 148041315}     []  spotify:artist:06HL4z0CvFAxyc27GXpf02 2025-12-16 22:19:04.853791
-    # 1  <built-in function id>   Post Malone   {'href': None, 'total': 47956715}     []  spotify:artist:246dkjvS1zLTtiykXe5h60 2025-12-16 22:19:04.928203
+    return artist_df
+
 
 
 initialize_artists()
