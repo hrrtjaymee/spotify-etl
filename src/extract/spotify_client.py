@@ -14,15 +14,27 @@ auth_manager = SpotifyClientCredentials(
     client_secret=os.getenv('CLIENT_SECRET'))
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
-
-def get_artists_deets(artists_lists): #without top tracks
+#MAKING THE ARTIST DF
+def get_artists_deets(artists_lists): 
+    #TODO: fill albums column
     artists_df = {
-        'id': [], 
+        'artist_id': [], 
         'artist_name': [], 
         'followers': [], 
         'popularity': [], 
         'url': [], 
-        'last_updated': []
+        'last_updated': [],
+        'albums': []
+    }
+    #TODO: fill tracks column
+    artist_albums = {
+         'album_id': [],
+         'album_name': [],
+         'artist_id': [],
+         'number_tracks': [],
+         'tracks': [],
+         'release_date': [],
+         'url': []
     }
 
     for item in artists_lists:
@@ -30,16 +42,34 @@ def get_artists_deets(artists_lists): #without top tracks
             artist_id = item['id']
 
             current = datetime.now()
-            search_result = sp.artist(artist_id=artist_id)
+            #BUILDING ARTIST_DF CONTENT
+            artist_search = sp.artist(artist_id=artist_id)
 
-            artists_df['id'].append(artist_id)
+            artists_df['artist_id'].append(artist_id)
             artists_df['artist_name'].append(item['name'])
-            artists_df['followers'].append(search_result['followers']['total'])
-            artists_df['popularity'].append(search_result['popularity'])
-            artists_df['url'].append(search_result['external_urls']['spotify'])
+            artists_df['followers'].append(artist_search['followers']['total'])
+            artists_df['popularity'].append(artist_search['popularity'])
+            artists_df['url'].append(artist_search['external_urls']['spotify'])
             artists_df['last_updated'].append(current)
+
+            #BUILDING ARTIST_ALBUM_DF CONTENT
+            album_search = sp.artist_albums(artist_id=artist_id, include_groups='album')
+
+            album_items = album_search['items']
+
+            while album_search['next']:
+                 for item in album_items:
+                    artist_albums['artist_id'].append(artist_id)
+                    artist_albums['album_id'].append(item['id'])
+                    artist_albums['album_name'].append(item['name'])
+                    artist_albums['number_tracks'].append(item['total_tracks'])
+                    artist_albums['release_date'].append(item['release_date'])
+                    artist_albums['url'].append(item['external_urls']['spotify'])
     
-    return artists_df
+    #TODO: fix memory error
+
+    
+    return artists_df, artist_albums
 
 def initialize_artists(): #main function that will call other sub functions
     playlist_id = '0fACn1Axw1sBcozazZFbsJ'
@@ -59,7 +89,6 @@ def initialize_artists(): #main function that will call other sub functions
 
         result_playlist = sp.next(result_playlist)
 
-    print(json.dumps(artists[0], indent = 4))
 
     #calling get_artists_deets
     artist_df = pd.DataFrame(data=get_artists_deets(artists))
