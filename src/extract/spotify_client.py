@@ -50,7 +50,7 @@ def load_albums(artists_ids):
                 artist_albums['url'].append(item['external_urls']['spotify'])
             album_search = sp.next(album_search)
         
-        print('Finished creating albums table')
+     print('Finished creating albums table')
     #TODO: load album_df to databases
      return album_ids
 
@@ -83,6 +83,28 @@ def load_tracks(albums_ids):
     return 
 
 def load_top_tracks(artists_ids):
+    top_tracks = {
+        'artist_id': [],
+        'tracks_ids': [],
+        'last_updated': []
+    }
+
+    print('Filling top tracks table')
+
+    for artist in artists_ids:
+        current = datetime.now()
+        top_tracks_search = sp.artist_top_tracks(artist_id=artist)['tracks']
+        top_tracks['artist_id'].append(artist)
+
+        temp_top = []
+        for tracks in top_tracks_search:
+            temp_top.append(tracks['id'])
+
+        top_tracks['tracks_ids'].append(temp_top)
+        top_tracks['last_updated'].append(current)
+
+    print('Fnished filling top tracks table')
+    #TODO: load top_tracks to database
     return 
 
 #MAKING THE ARTIST DF
@@ -156,27 +178,4 @@ def initialize_artists(): #main function that will call other sub functions
 
     return
 
-
-
 initialize_artists()
-
-
-
-
-
-
-
-
-# results_2 = sp.search(q='remaster%2520track%3ADoxy%2520artist%3AMiles%2520Davis', type='artist', limit=2)
-# artists = results_2['artists']['items']
-# while results_2['artists']['next']:
-#     results_2 = sp.next(results_2['artists'])
-#     artists.extend(results_2['artists']['items'])
-
-# for artist in artists:
-#     print(artist['name'])
-
-# genre_results = sp.categories()
-# print(genre_results)
-
-
