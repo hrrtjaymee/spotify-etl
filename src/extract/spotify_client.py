@@ -21,7 +21,7 @@ def load_albums(artists_ids):
          'artist_id': [],
          'number_tracks': [],
          'release_date': [],
-         'url': []
+         'album_url': []
     }
      
      print('Filling album table')
@@ -47,7 +47,7 @@ def load_albums(artists_ids):
                 artist_albums['album_name'].append(item['name'])
                 artist_albums['number_tracks'].append(item['total_tracks'])
                 artist_albums['release_date'].append(item['release_date'])
-                artist_albums['url'].append(item['external_urls']['spotify'])
+                artist_albums['album_url'].append(item['external_urls']['spotify'])
             album_search = sp.next(album_search)
         
      print('Finished creating albums table')
@@ -60,7 +60,7 @@ def load_tracks(albums_ids):
         'album_id': [],
         'disc_number': [],
         'duration_ms': [],
-        'url': []
+        'track_url': []
     }
 
     print('Filling tracks table')
@@ -74,7 +74,7 @@ def load_tracks(albums_ids):
                 tracks['album_id'].append(album)
                 tracks['track_name'].append(track['name'])
                 tracks['duration_ms'].append(track['duration_ms'])
-                tracks['url'].append(track['external_urls']['spotify'])
+                tracks['track_url'].append(track['external_urls']['spotify'])
 
             album_search = sp.next(album_search)
 
@@ -83,9 +83,11 @@ def load_tracks(albums_ids):
     return 
 
 def load_top_tracks(artists_ids):
+
+    #TODO: alter top tracks logic to match schema
     top_tracks = {
         'artist_id': [],
-        'tracks_ids': [],
+        'tracks_ids': [], #stores list of track ids
         'last_updated': []
     }
 
