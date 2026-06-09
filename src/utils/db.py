@@ -1,20 +1,21 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
+from src.utils.logger import get_logger
 
 load_dotenv()
+logger = get_logger(__name__)
 
 def get_connection():
     try: 
         conn = psycopg2.connect(
-            database=os.getenv('DB_DEV'),
             user=os.getenv('DB_USER'),
             password=os.getenv('DB_PASSWORD'),
             host=os.getenv('DB_HOST'),
-            port=os.getenv('DB_PORT')
+            port=os.getenv('DB_PORT'),
+            database=os.getenv('DB_NAME')
             )
-        print('Database connected successfully')
+        logger.info('Database connected successfully')
     except Exception as e: 
-        print('Database not connected successfully')
-        print(e)
+        logger.critical(f'Database not connected successfully {e}')
     return conn
